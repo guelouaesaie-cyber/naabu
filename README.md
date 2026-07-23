@@ -81,49 +81,71 @@ css/
 
 js/
   engine.js           Moteur : modules, questionnaire, règles de décision
+  vocab.js            Vocabulaire adaptatif selon le métier
   store.js            Stockage local (IndexedDB, repli localStorage)
   onboarding.js       "Business Setup IA" — la conversation d'accueil
   app.js              Shell, navigation dynamique, réglages
-  util.js             Helpers (monnaie, dates, modale, toast)
+  util.js             Helpers (monnaie, dates, modale, confirmation, toast)
   modules/
-    dashboard.js      KPI, mini-graphe, alertes, conseil de l'assistant
-    sales.js          Ventes : saisie rapide + historique
-    stock.js          Inventaire + alertes de stock bas
-    misc.js           Clients (CRM), Comptabilité, Rapports (export CSV),
-                      et les vues "à venir" des modules non-MVP
+    dashboard.js      Raccourcis, KPI, graphe, alertes, conseil de l'assistant
+    products.js       Catalogue : articles + variantes + stock (le socle)
+    sales.js          Vente depuis le catalogue, panier, saisie différée
+    orders.js         Commandes, livreurs, statuts, conversion en vente
+    misc.js           Clients (CRM), Comptabilité, Export CSV,
+                      et les vues "à venir" des modules non encore construits
 ```
 
 ### Modèle de données (stores locaux)
 
-| Store       | Champs principaux                                  |
-|-------------|----------------------------------------------------|
-| `config`    | `key`, `value` (réponses, modules, nom, onboarded) |
-| `sales`     | `label`, `price`, `qty`, `total`, `pay`, `date`    |
-| `stock`     | `name`, `qty`, `price`, `min` (seuil d'alerte)     |
-| `clients`   | `name`, `phone`, `debt`                            |
-| `expenses`  | `label`, `amount`, `cat`, `date`                   |
-| `products`  | (réservé pour une version future)                  |
+| Store       | Champs principaux                                                |
+|-------------|------------------------------------------------------------------|
+| `config`    | `key`, `value` (réponses, modules, nom, onboarded)               |
+| `products`  | `name`, `emoji`, `variants[]` → `{name, qty, price, min}`        |
+| `sales`     | `items[]` → `{productId, variantIndex, label, price, qty}`, `total`, `pay`, `date` |
+| `orders`    | `client`, `phone`, `address`, `courier`, `items[]`, `total`, `status`, `date` |
+| `clients`   | `name`, `phone`, `debt`                                          |
+| `expenses`  | `label`, `amount`, `cat`, `date`                                 |
+
+**Le point clé** : une vente référence les articles du catalogue
+(`productId` + `variantIndex`). C'est ce lien qui permet de décrémenter le
+stock automatiquement — et de le restituer si on supprime la vente.
 
 ---
 
-## ✅ Ce que fait le MVP actuel
+## ✅ Ce que fait la version actuelle (v2)
 
-Modules **pleinement fonctionnels** : Tableau de bord, Ventes, Stock,
-Clients, Comptabilité, Rapports (export CSV), Assistant IA (conseils locaux).
+Modules **pleinement fonctionnels** :
 
-Modules **personnalisés mais marqués « à venir »** : Fournisseurs, Marketing,
-Livraisons, Dates & lots, Variantes, Prestations, Multi-points, Fidélité,
-Produits. Ils apparaissent dans l'espace selon le profil et seront activés
-dans les prochaines versions.
+- **Catalogue** — vos articles avec leurs variantes (parfums, tailles,
+  couleurs, modèles). Chaque variante a sa quantité et son prix.
+- **Ventes** — on vend en touchant un article : le stock se décrémente tout
+  seul. Panier multi-articles, plusieurs moyens de paiement, et **saisie
+  différée** pour enregistrer les ventes notées sur un cahier.
+- **Commandes & livraisons** — prise de commande avec client, adresse et
+  livreur (Yango, Gozem, livreur maison, retrait). Statuts : à préparer →
+  en route → livrée. Une commande livrée devient une vente automatiquement.
+- **Tableau de bord** — raccourcis d'action, KPI, graphe 7 jours, commandes
+  en cours, alertes de stock bas, conseils de l'assistant.
+- **Clients** (CRM + lien WhatsApp), **Comptabilité**, **Export CSV**.
+
+Modules **affichés selon le profil mais marqués « à venir »** : Fournisseurs,
+Marketing, Dates & lots, Prestations, Multi-points, Fidélité.
+
+### Le vocabulaire s'adapte au métier
+
+Les écrans sont les mêmes pour tous, mais les mots changent (`js/vocab.js`) :
+une glacière voit « parfums », un vendeur de vêtements voit « variantes »,
+une pharmacie voit « présentations », un coiffeur voit « formules ».
+C'est ce qui rend l'app utilisable par n'importe quel commerce sans la
+rendre générique.
 
 ## 🛣️ Plan par phases
 
-- **v1 (actuelle)** — Setup IA + tableau de bord + ventes + stock + clients +
-  compta + export. Offline. Données locales.
-- **v2** — Produits & variantes complets, module fournisseurs, livraisons.
-- **v3** — Marketing (campagnes WhatsApp/réseaux), fidélité, dates de péremption.
-- **v4** — Synchronisation multi-appareils optionnelle (backend au choix),
-  assistant IA connecté à une vraie API.
+- **v1** — Setup IA + tableau de bord + ventes + stock simple.
+- **v2 (actuelle)** — Catalogue avec variantes, lien stock↔vente automatique,
+  commandes & livraisons, saisie différée, vocabulaire adaptatif.
+- **v3** — Fournisseurs, marketing WhatsApp, dates de péremption, fidélité.
+- **v4** — Synchronisation multi-appareils optionnelle, assistant IA connecté.
 
 ---
 
