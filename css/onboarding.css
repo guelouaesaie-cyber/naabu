@@ -1,0 +1,64 @@
+/* =============================================================
+   NAABU — Onboarding "Business Setup IA"
+   Une conversation, pas un formulaire.
+   ============================================================= */
+
+.onb {
+  min-height: 100vh; max-width: 720px; margin: 0 auto;
+  display: flex; flex-direction: column;
+  background: var(--sand);
+}
+.onb-head {
+  padding: 22px var(--pad) 8px;
+}
+.onb-head .logo { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; }
+.onb-head .logo span { color: var(--indigo); }
+.onb-progress { height: 4px; background: var(--sand-2); border-radius: 999px; margin-top: 14px; overflow: hidden; }
+.onb-progress i { display: block; height: 100%; background: linear-gradient(90deg, var(--indigo-2), var(--indigo)); border-radius: 999px; transition: width .4s ease; }
+
+.chat { flex: 1; overflow-y: auto; padding: 16px var(--pad) 8px; display: flex; flex-direction: column; gap: 12px; }
+
+.bubble {
+  max-width: 82%; padding: 13px 16px; border-radius: 18px; line-height: 1.45;
+  animation: pop .3s cubic-bezier(.2,.9,.3,1) both;
+}
+@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+.bubble.bot { background: var(--card); border: 1px solid var(--line); border-bottom-left-radius: 6px; align-self: flex-start; box-shadow: var(--shadow); }
+.bubble.me  { background: var(--indigo); color: #fff; border-bottom-right-radius: 6px; align-self: flex-end; }
+
+.typing { display: inline-flex; gap: 4px; align-items: center; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-soft); animation: blink 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: .2s; }
+.typing i:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%,60%,100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+.options { padding: 8px var(--pad) 20px; display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border: 1px solid var(--line);
+  padding: 14px 16px; border-radius: 14px; text-align: left; width: 100%;
+  font-size: .95rem; color: var(--ink); transition: transform .12s, border-color .2s, background .2s;
+  animation: pop .3s ease both;
+}
+.opt:hover { border-color: var(--indigo-2); }
+.opt:active { transform: scale(.98); }
+.opt.selected { border-color: var(--indigo); background: #efeafc; }
+.opt .ic { font-size: 1.3rem; }
+.opt .chk { margin-left: auto; color: var(--indigo); font-weight: 700; opacity: 0; }
+.opt.selected .chk { opacity: 1; }
+
+.multi-actions { padding: 0 var(--pad) 22px; }
+
+/* Résumé final */
+.summary { padding: 20px var(--pad) 32px; animation: fade .4s ease both; }
+.summary h1 { font-size: 1.6rem; margin-bottom: 6px; }
+.summary .lead { color: var(--ink-soft); margin-bottom: 18px; }
+.summary .mods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+.summary .m {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--line);
+  padding: 12px; border-radius: 12px; font-size: .88rem; font-weight: 500;
+  animation: pop .35s ease both;
+}
+.summary .m .ic { font-size: 1.2rem; }
+.summary .m .chk { margin-left: auto; color: var(--ok); }

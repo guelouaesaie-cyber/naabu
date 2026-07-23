@@ -1,0 +1,15 @@
+{
+  "name": "NAABU — Gestion de commerce",
+  "short_name": "NAABU",
+  "description": "L'espace de gestion qui s'adapte à votre commerce.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3EDE1",
+  "theme_color": "#3B2E7E",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
