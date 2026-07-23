@@ -1,15 +1,19 @@
 {
   "name": "NAABU — Gestion de commerce",
   "short_name": "NAABU",
-  "description": "L'espace de gestion qui s'adapte à votre commerce.",
+  "description": "La gestion qui s'adapte à votre commerce : ventes, stock, commandes, finances.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F3EDE1",
-  "theme_color": "#3B2E7E",
+  "background_color": "#F7F8FA",
+  "theme_color": "#2E3BAF",
+  "lang": "fr",
+  "categories": ["business", "productivity", "finance"],
   "icons": [
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

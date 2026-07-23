@@ -1,163 +1,167 @@
 # NAABU
 
-**L'espace de gestion qui s'adapte à votre commerce.**
+**La gestion qui s'adapte à votre commerce.**
 
-NAABU est une application web (PWA) de gestion pour entrepreneurs de tous
-secteurs. Au premier lancement, un assistant conversationnel pose quelques
-questions et **construit automatiquement un espace de travail personnalisé** :
-seuls les modules utiles à votre métier sont activés.
+Application web (PWA) de gestion pour commerçants et entrepreneurs, quel que
+soit le métier. Au premier lancement, un assistant pose quelques questions et
+construit automatiquement un espace de travail personnalisé : seuls les
+modules utiles apparaissent.
 
-- 📱 Fonctionne sur iPhone, Android et ordinateur (dans le navigateur)
-- 🔌 Marche **hors-ligne** une fois chargée
-- 🔒 Toutes les données restent **sur votre appareil** (aucun serveur)
-- ⚡ Hébergeable gratuitement sur **GitHub Pages** — votre ordinateur n'est jamais le serveur
+- Fonctionne sur iPhone, Android et ordinateur
+- Marche **hors ligne** une fois chargée
+- Toutes les données restent **sur l'appareil** (aucun serveur)
+- Hébergeable gratuitement sur **GitHub Pages**
 
 ---
 
-## 🚀 Mettre en ligne sur GitHub Pages
+## Mise en ligne sur GitHub Pages
 
-1. Créez un dépôt sur GitHub (par ex. `naabu`).
-2. Déposez tout le contenu de ce dossier à la racine du dépôt.
-3. Dans le dépôt : **Settings → Pages**.
-4. Sous *Build and deployment → Source*, choisissez **Deploy from a branch**,
-   branche `main`, dossier `/ (root)`, puis **Save**.
-5. Après une minute, votre app est en ligne à l'adresse :
-   `https://VOTRE-PSEUDO.github.io/naabu/`
+1. Déposez tout le contenu de ce dossier à la racine de votre dépôt.
+2. **Settings → Pages**
+3. *Source* : « Deploy from a branch », branche `main`, dossier `/ (root)`
+4. L'application est en ligne à `https://VOTRE-PSEUDO.github.io/VOTRE-DEPOT/`
 
-Le fichier `.nojekyll` (déjà présent) est nécessaire pour que GitHub serve
-correctement les modules JavaScript.
+Le fichier `.nojekyll` est nécessaire pour que GitHub serve les modules
+JavaScript. Il est déjà présent.
 
-### Tester en local d'abord
+### Tester en local
 
 ```bash
-# depuis ce dossier
 python3 -m http.server 8000
-# puis ouvrez http://localhost:8000
+# puis http://localhost:8000
 ```
 
-> Il faut un petit serveur (comme ci-dessus) car l'app utilise les modules
-> JavaScript ES ; ouvrir `index.html` par double-clic ne suffit pas.
+Un serveur est nécessaire (les modules ES ne se chargent pas en `file://`).
 
 ### Installer sur le téléphone
 
-Ouvrez l'URL dans Safari (iPhone) ou Chrome (Android) puis
-**Partager → Sur l'écran d'accueil**. NAABU s'installe comme une vraie app.
+Ouvrez l'adresse dans Safari (iPhone) ou Chrome (Android), puis
+**Partager → Sur l'écran d'accueil**.
 
 ---
 
-## 🧠 Comment fonctionne la personnalisation
+## Les modules
 
-Tout le « cerveau » vit dans **`js/engine.js`** :
+| Module | Ce qu'il fait |
+|---|---|
+| **Tableau de bord** | Recette du jour, résultat sur 30 jours, alertes, graphique 7 jours, conseils |
+| **Ventes** | Point de vente tactile, panier, remises, reçu imprimable et partageable, saisie différée |
+| **Catalogue** | Articles et variantes, quantités, prix de vente et d'achat, marge, seuils d'alerte |
+| **Commandes** | Prise de commande, livreur (Yango, Gozem, maison…), statuts, conversion en vente |
+| **Clients** | Répertoire, créances, fidélité, historique d'achats, contact WhatsApp |
+| **Fournisseurs** | Contacts, sommes dues, liste de réapprovisionnement |
+| **Finances** | Revenus, dépenses par catégorie, résultat net, marge commerciale |
+| **Marketing** | Modèles de messages WhatsApp : promotion, arrivage, relance, catalogue |
+| **Péremption** | Suivi des dates limites, alertes à J-7 |
+| **Prestations** | Services avec tarif et durée |
+| **Points de vente** | Plusieurs boutiques ou dépôts |
+| **Rapports** | Meilleures ventes, moyens de paiement, exports CSV |
 
-- `MODULES` — le catalogue de tous les modules (ventes, stock, clients…).
-- `QUESTIONS` — le questionnaire de l'assistant (gère les questions
-  conditionnelles via `skipIf`).
-- `RULES` — les règles de décision : chaque règle regarde les réponses et
-  active des modules. Le moteur combine toutes les règles.
+Chaque module s'active selon les réponses au questionnaire, et peut être
+activé ou masqué manuellement dans les réglages.
 
-**Ajouter un métier ou une règle** = ajouter une entrée dans `RULES`.
-Par exemple, activer le module fidélité pour les salons de beauté :
+---
+
+## Comment fonctionne la personnalisation
+
+Tout le moteur est dans **`js/engine.js`** :
+
+- `MODULES` — le catalogue des modules
+- `QUESTIONS` — le questionnaire (avec questions conditionnelles via `skipIf`)
+- `RULES` — les règles de décision
+
+Ajouter un métier ou une règle se fait en une ligne :
 
 ```js
 { when: a => a.sector === "beauty", enable: ["loyalty", "clients"] },
 ```
 
-Aucun autre fichier à toucher : l'app lit la liste des modules activés et
-construit la navigation toute seule.
-
----
-
-## 🗂️ Architecture
-
-```
-index.html            Point d'entrée + enregistrement du service worker
-manifest.webmanifest  Métadonnées PWA (installation)
-sw.js                 Service worker (cache hors-ligne)
-.nojekyll             Requis pour GitHub Pages
-
-css/
-  style.css           Identité visuelle + composants
-  onboarding.css      Écran de configuration conversationnel
-
-js/
-  engine.js           Moteur : modules, questionnaire, règles de décision
-  vocab.js            Vocabulaire adaptatif selon le métier
-  store.js            Stockage local (IndexedDB, repli localStorage)
-  onboarding.js       "Business Setup IA" — la conversation d'accueil
-  app.js              Shell, navigation dynamique, réglages
-  util.js             Helpers (monnaie, dates, modale, confirmation, toast)
-  modules/
-    dashboard.js      Raccourcis, KPI, graphe, alertes, conseil de l'assistant
-    products.js       Catalogue : articles + variantes + stock (le socle)
-    sales.js          Vente depuis le catalogue, panier, saisie différée
-    orders.js         Commandes, livreurs, statuts, conversion en vente
-    misc.js           Clients (CRM), Comptabilité, Export CSV,
-                      et les vues "à venir" des modules non encore construits
-```
-
-### Modèle de données (stores locaux)
-
-| Store       | Champs principaux                                                |
-|-------------|------------------------------------------------------------------|
-| `config`    | `key`, `value` (réponses, modules, nom, onboarded)               |
-| `products`  | `name`, `emoji`, `variants[]` → `{name, qty, price, min}`        |
-| `sales`     | `items[]` → `{productId, variantIndex, label, price, qty}`, `total`, `pay`, `date` |
-| `orders`    | `client`, `phone`, `address`, `courier`, `items[]`, `total`, `status`, `date` |
-| `clients`   | `name`, `phone`, `debt`                                          |
-| `expenses`  | `label`, `amount`, `cat`, `date`                                 |
-
-**Le point clé** : une vente référence les articles du catalogue
-(`productId` + `variantIndex`). C'est ce lien qui permet de décrémenter le
-stock automatiquement — et de le restituer si on supprime la vente.
-
----
-
-## ✅ Ce que fait la version actuelle (v2)
-
-Modules **pleinement fonctionnels** :
-
-- **Catalogue** — vos articles avec leurs variantes (parfums, tailles,
-  couleurs, modèles). Chaque variante a sa quantité et son prix.
-- **Ventes** — on vend en touchant un article : le stock se décrémente tout
-  seul. Panier multi-articles, plusieurs moyens de paiement, et **saisie
-  différée** pour enregistrer les ventes notées sur un cahier.
-- **Commandes & livraisons** — prise de commande avec client, adresse et
-  livreur (Yango, Gozem, livreur maison, retrait). Statuts : à préparer →
-  en route → livrée. Une commande livrée devient une vente automatiquement.
-- **Tableau de bord** — raccourcis d'action, KPI, graphe 7 jours, commandes
-  en cours, alertes de stock bas, conseils de l'assistant.
-- **Clients** (CRM + lien WhatsApp), **Comptabilité**, **Export CSV**.
-
-Modules **affichés selon le profil mais marqués « à venir »** : Fournisseurs,
-Marketing, Dates & lots, Prestations, Multi-points, Fidélité.
+L'application lit ensuite la liste des modules actifs et construit la
+navigation toute seule.
 
 ### Le vocabulaire s'adapte au métier
 
-Les écrans sont les mêmes pour tous, mais les mots changent (`js/vocab.js`) :
-une glacière voit « parfums », un vendeur de vêtements voit « variantes »,
-une pharmacie voit « présentations », un coiffeur voit « formules ».
-C'est ce qui rend l'app utilisable par n'importe quel commerce sans la
-rendre générique.
-
-## 🛣️ Plan par phases
-
-- **v1** — Setup IA + tableau de bord + ventes + stock simple.
-- **v2 (actuelle)** — Catalogue avec variantes, lien stock↔vente automatique,
-  commandes & livraisons, saisie différée, vocabulaire adaptatif.
-- **v3** — Fournisseurs, marketing WhatsApp, dates de péremption, fidélité.
-- **v4** — Synchronisation multi-appareils optionnelle, assistant IA connecté.
+Dans **`js/vocab.js`** : mêmes écrans, mots différents. Une glacière voit
+« parfums », une boutique voit « variantes », une pharmacie voit
+« présentations », un salon voit « formules ».
 
 ---
 
-## 🔐 Confidentialité
+## Architecture
+
+```
+index.html            Point d'entrée
+manifest.webmanifest  Métadonnées PWA
+sw.js                 Service worker (hors ligne)
+.nojekyll             Requis pour GitHub Pages
+
+css/
+  style.css           Design system : tokens, composants, reçu
+  onboarding.css      Écran de configuration initiale
+
+js/
+  icons.js            Bibliothèque d'icônes SVG (aucun emoji)
+  engine.js           Modules, questionnaire, règles de décision
+  vocab.js            Vocabulaire adaptatif par métier
+  store.js            Stockage local (IndexedDB, repli localStorage)
+  util.js             Format, feuilles modales, toasts, exports
+  onboarding.js       Configuration initiale conversationnelle
+  app.js              Coquille, navigation, réglages, sauvegarde
+  modules/
+    dashboard.js      Tableau de bord
+    sales.js          Ventes, point de vente, reçu
+    products.js       Catalogue et variantes
+    orders.js         Commandes et livraisons
+    clients.js        Répertoire clients
+    finance.js        Revenus, dépenses, résultat
+    more.js           Fournisseurs, marketing, péremption,
+                      prestations, points de vente, rapports
+```
+
+### Modèle de données
+
+| Store | Champs |
+|---|---|
+| `config` | `key`, `value` |
+| `products` | `name`, `icon`, `variants[]` → `{name, qty, price, cost, min, expiry}` |
+| `sales` | `items[]` → `{productId, variantIndex, label, price, cost, qty}`, `subtotal`, `discount`, `total`, `pay`, `client`, `date` |
+| `orders` | `client`, `phone`, `address`, `courier`, `items[]`, `fee`, `total`, `status`, `date` |
+| `clients` | `name`, `phone`, `debt`, `points`, `note` |
+| `expenses` | `label`, `amount`, `cat`, `date` |
+| `suppliers` | `name`, `phone`, `what`, `due` |
+| `services` | `name`, `price`, `duration` |
+| `stores` | `name`, `address` |
+
+**Le point clé** : une vente référence les articles du catalogue
+(`productId` + `variantIndex`). C'est ce lien qui décrémente le stock
+automatiquement — et le restitue si la vente est annulée.
+
+---
+
+## Interface
+
+- **Icônes** : toutes les icônes sont des SVG au trait dessinés sur une
+  grille 24×24 (`js/icons.js`). Aucun emoji dans l'interface.
+- **Typographie** : Inter pour le texte, Inter Tight pour les chiffres,
+  avec chiffres tabulaires pour l'alignement des montants.
+- **Couleurs** : surface claire neutre, accent indigo, sémantique verte
+  (positif), ambre (attention), rouge (négatif).
+- **Animations** : entrées de vue, feuilles modales, barres du graphique,
+  retour haptique sur mobile. Le réglage « animations réduites » du système
+  est respecté.
+
+---
+
+## Sauvegarde
+
+Les réglages permettent d'exporter toutes les données dans un fichier JSON et
+de les restaurer sur un autre appareil. Les exports CSV (ventes, catalogue,
+dépenses) s'ouvrent dans Excel.
+
+---
+
+## Confidentialité
 
 NAABU n'envoie aucune donnée sur Internet. Tout est stocké dans le navigateur
-de l'appareil. L'export CSV et la réinitialisation sont disponibles dans les
-**Réglages** (icône ⚙️).
-
----
-
-*Assistant IA : dans cette version, les conseils sont calculés localement à
-partir de vos chiffres (produit le plus rentable, alertes de stock, résultat
-net). Aucune connexion externe n'est nécessaire — ce qui garde l'app rapide,
-gratuite et privée.*
+de l'appareil. L'assistant calcule ses conseils localement à partir de vos
+chiffres, sans connexion externe.

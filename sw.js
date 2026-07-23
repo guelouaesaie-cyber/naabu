@@ -1,5 +1,5 @@
 /* NAABU — Service Worker (mode hors-ligne) */
-const CACHE = "naabu-v2";
+const CACHE = "naabu-v3";
 const ASSETS = [
   "./",
   "index.html",
@@ -10,12 +10,15 @@ const ASSETS = [
   "js/store.js",
   "js/onboarding.js",
   "js/util.js",
+  "js/icons.js",
   "js/vocab.js",
   "js/modules/dashboard.js",
   "js/modules/sales.js",
   "js/modules/products.js",
   "js/modules/orders.js",
-  "js/modules/misc.js",
+  "js/modules/clients.js",
+  "js/modules/finance.js",
+  "js/modules/more.js",
   "manifest.webmanifest",
   "assets/icon-192.png",
   "assets/icon-512.png",
